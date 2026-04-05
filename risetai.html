@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Riset.ai — AI Research Companion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   THEME SYSTEM
+============================================================ */
+:root {
+  --bg: #ffffff;
+  --bg2: #f7f7f5;
+  --bg3: #eeece8;
+  --border: #e5e3de;
+  --border2: #d4d1cb;
+  --text: #1a1a18;
+  --text2: #6b6860;
+  --text3: #a09d97;
+  --accent: #1a1a18;
+  --accent-bg: #f0ede8;
+  --sidebar-bg: #f7f7f5;
+  --card-bg: #ffffff;
+  --input-bg: #ffffff;
+  --phase-done: #2d6a4f;
+  --phase-active: #1a1a18;
+  --phase-idle: #a09d97;
+  --tag-chatgpt: #16a34a;
+  --tag-chatgpt-bg: #dcfce7;
+  --tag-claude: #0f766e;
+  --tag-claude-bg: #ccfbf1;
+  --tag-perplexity: #7c3aed;
+  --tag-perplexity-bg: #ede9fe;
+  --tag-scopus: #1d4ed8;
+  --tag-scopus-bg: #dbeafe;
+  --tag-gemini: #b45309;
+  --tag-gemini-bg: #fef3c7;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --radius: 8px;
+  --radius-lg: 12px;
+}
+
+[data-theme="warm"] {
+  --bg: #fdf8f0; --bg2: #f5ede0; --bg3: #ede0cc;
+  --border: #e8d8c0; --border2: #d9c4a8;
+  --text: #2c1f0e; --text2: #7a5c3a; --text3: #b08c64;
+  --accent: #8b4513; --accent-bg: #f0e0cc;
+  --sidebar-bg: #f5ede0; --card-bg: #fdf8f0; --input-bg: #fdf8f0;
+}
+[data-theme="sage"] {
+  --bg: #f4f7f4; --bg2: #e8f0e8; --bg3: #d8e8d8;
+  --border: #c8dcc8; --border2: #b0ccb0;
+  --text: #1a2e1a; --text2: #4a6e4a; --text3: #7a9e7a;
+  --accent: #2d6a4f; --accent-bg: #d8f0e4;
+  --sidebar-bg: #e8f0e8; --card-bg: #f4f7f4; --input-bg: #f4f7f4;
+}
+[data-theme="slate"] {
+  --bg: #f0f4f8; --bg2: #e2e8f0; --bg3: #cbd5e1;
+  --border: #b8c8d8; --border2: #94a8bc;
+  --text: #0f1e2e; --text2: #4a6080; --text3: #7a96b0;
+  --accent: #1e40af; --accent-bg: #dbeafe;
+  --sidebar-bg: #e2e8f0; --card-bg: #f0f4f8; --input-bg: #f0f4f8;
+}
+[data-theme="dark"] {
+  --bg: #141414; --bg2: #1e1e1e; --bg3: #282828;
+  --border: #333333; --border2: #444444;
+  --text: #e8e6e0; --text2: #9a9690; --text3: #666260;
+  --accent: #e8e6e0; --accent-bg: #2a2a2a;
+  --sidebar-bg: #1a1a1a; --card-bg: #1e1e1e; --input-bg: #1e1e1e;
+  --tag-chatgpt-bg: #14532d; --tag-claude-bg: #134e4a;
+  --tag-perplexity-bg: #3b0764; --tag-scopus-bg: #1e3a8a; --tag-gemini-bg: #451a03;
+  --shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* ============================================================
+   RESET & BASE
+============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background 0.2s, color 0.2s;
+  -webkit-font-smoothing: antialiased;
+}
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+input, textarea, select { font-family: inherit; font-size: 13px; }
+a { color: inherit; text-decoration: none; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ============================================================
+   LOGIN SCREEN
+============================================================ */
+#login-screen {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; flex-direction: column; gap: 8px;
+}
+.login-box {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 40px 48px;
+  width: 380px; box-shadow: var(--shadow-md);
+}
+.login-logo { font-size: 22px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 8px; }
+.login-sub { color: var(--text2); font-size: 13px; margin-bottom: 28px; }
+.login-label { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.06em; }
+.login-input {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+  border-radius: var(--radius); background: var(--input-bg); color: var(--text);
+  font-size: 14px; outline: none; transition: border-color 0.15s;
+}
+.login-input:focus { border-color: var(--accent); }
+.login-btn {
+  width: 100%; padding: 10px; background: var(--accent); color: var(--bg);
+  border-radius: var(--radius); font-size: 14px; font-weight: 500;
+  margin-top: 16px; transition: opacity 0.15s;
+}
+.login-btn:hover { opacity: 0.85; }
+.login-forgot { font-size: 12px; color: var(--text3); margin-top: 12px; cursor: pointer; text-align: center; }
+.login-forgot:hover { color: var(--text2); }
+.login-error { font-size: 12px; color: #dc2626; margin-top: 8px; min-height: 16px; }
+.recovery-box { margin-top: 12px; padding: 14px; background: var(--bg2); border-radius: var(--radius); border: 1px solid var(--border); }
+.recovery-title { font-size: 12px; font-weight: 500; margin-bottom: 8px; }
+.recovery-code-display {
+  font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500;
+  background: var(--bg3); padding: 10px 14px; border-radius: 6px;
+  letter-spacing: 0.1em; color: var(--accent); user-select: all;
+}
+.setup-note { font-size: 11px; color: var(--text3); margin-top: 8px; line-height: 1.5; }
+
+/* ============================================================
+   APP LAYOUT
+============================================================ */
+#app { display: none; height: 100vh; overflow: hidden; }
+#app.visible { display: flex; }
+
+/* SIDEBAR */
+.sidebar {
+  width: 240px; min-width: 240px; background: var(--sidebar-bg);
+  border-right: 1px solid var(--border); display: flex; flex-direction: column;
+  height: 100vh; overflow-y: auto;
+}
+.sidebar-header {
+  padding: 20px 16px 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.sidebar-logo { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
+.sidebar-logo span { color: var(--text3); font-weight: 400; }
+.sidebar-nav { padding: 8px 0; flex: 1; }
+.nav-section { padding: 12px 16px 4px; font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; }
+.nav-item {
+  display: flex; align-items: center; gap: 8px; padding: 7px 16px;
+  font-size: 13px; color: var(--text2); cursor: pointer; transition: all 0.1s;
+  border-radius: 0; width: 100%; text-align: left;
+}
+.nav-item:hover { background: var(--bg3); color: var(--text); }
+.nav-item.active { background: var(--bg3); color: var(--text); font-weight: 500; }
+.nav-item .nav-icon { width: 16px; text-align: center; font-size: 14px; opacity: 0.7; }
+.sidebar-bottom { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; }
+.sidebar-btn {
+  display: flex; align-items: center; gap: 8px; padding: 7px 8px;
+  font-size: 12px; color: var(--text2); cursor: pointer; border-radius: var(--radius);
+  transition: all 0.1s; width: 100%; text-align: left;
+}
+.sidebar-btn:hover { background: var(--bg3); color: var(--text); }
+
+/* MAIN CONTENT */
+.main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+.main-header {
+  padding: 20px 32px 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg); position: sticky; top: 0; z-index: 10;
+}
+.main-title { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+.breadcrumb { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.breadcrumb span { color: var(--text2); }
+.header-actions { display: flex; gap: 8px; align-items: center; }
+.main-content { padding: 28px 32px; flex: 1; }
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px;
+  border-radius: var(--radius); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s; border: 1px solid transparent;
+}
+.btn-primary { background: var(--accent); color: var(--bg); }
+.btn-primary:hover { opacity: 0.85; }
+.btn-secondary { background: var(--bg2); color: var(--text); border-color: var(--border); }
+.btn-secondary:hover { background: var(--bg3); }
+.btn-ghost { background: transparent; color: var(--text2); border-color: var(--border); }
+.btn-ghost:hover { background: var(--bg2); color: var(--text); }
+.btn-danger { background: #fee2e2; color: #dc2626; border-color: #fecaca; }
+.btn-danger:hover { background: #fecaca; }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-xs { padding: 3px 8px; font-size: 11px; }
+
+/* ============================================================
+   CARDS & SECTIONS
+============================================================ */
+.card {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px;
+  box-shadow: var(--shadow); margin-bottom: 16px;
+}
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.card-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.card-subtitle { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.section-label {
+  font-size: 10px; font-weight: 600; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px;
+}
+
+/* ============================================================
+   AI BADGES
+============================================================ */
+.ai-badge {
+  display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px;
+  border-radius: 99px; font-size: 11px; font-weight: 600;
+}
+.ai-badge.chatgpt { background: var(--tag-chatgpt-bg); color: var(--tag-chatgpt); }
+.ai-badge.claude { background: var(--tag-claude-bg); color: var(--tag-claude); }
+.ai-badge.perplexity { background: var(--tag-perplexity-bg); color: var(--tag-perplexity); }
+.ai-badge.scopus { background: var(--tag-scopus-bg); color: var(--tag-scopus); }
+.ai-badge.gemini { background: var(--tag-gemini-bg); color: var(--tag-gemini); }
+.ai-dot { width: 6px; height: 6px; border-radius: 50%; }
+.ai-badge.chatgpt .ai-dot { background: var(--tag-chatgpt); }
+.ai-badge.claude .ai-dot { background: var(--tag-claude); }
+.ai-badge.perplexity .ai-dot { background: var(--tag-perplexity); }
+.ai-badge.scopus .ai-dot { background: var(--tag-scopus); }
+.ai-badge.gemini .ai-dot { background: var(--tag-gemini); }
+
+/* ============================================================
+   FORM ELEMENTS
+============================================================ */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 6px; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--border);
+  border-radius: var(--radius); background: var(--input-bg); color: var(--text);
+  font-size: 13px; outline: none; transition: border-color 0.15s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+.form-textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+.form-textarea.large { min-height: 140px; }
+.form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+
+/* ============================================================
+   MODAL
+============================================================ */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 500; opacity: 0; pointer-events: none; transition: opacity 0.15s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 28px; width: 480px;
+  max-height: 85vh; overflow-y: auto; box-shadow: var(--shadow-md);
+  transform: translateY(8px); transition: transform 0.15s;
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+.modal-sub { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
+.modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+/* ============================================================
+   DASHBOARD
+============================================================ */
+.dashboard-grid { display: flex; flex-direction: column; gap: 12px; }
+.project-card {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 18px 20px;
+  box-shadow: var(--shadow); cursor: pointer; transition: all 0.15s;
+  display: flex; align-items: center; gap: 16px;
+}
+.project-card:hover { border-color: var(--border2); box-shadow: var(--shadow-md); }
+.project-card-info { flex: 1; min-width: 0; }
+.project-card-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.project-card-meta { font-size: 12px; color: var(--text3); display: flex; gap: 12px; align-items: center; }
+.project-card-progress { width: 180px; min-width: 180px; }
+.progress-label { font-size: 11px; color: var(--text3); margin-bottom: 5px; display: flex; justify-content: space-between; }
+.progress-bar { height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s; }
+.project-card-actions { display: flex; gap: 6px; }
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text3); }
+.empty-title { font-size: 15px; font-weight: 500; color: var(--text2); margin-bottom: 6px; }
+.empty-sub { font-size: 13px; margin-bottom: 20px; }
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+.stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 20px; }
+.stat-num { font-size: 24px; font-weight: 600; letter-spacing: -0.5px; }
+.stat-label { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+/* ============================================================
+   PROJECT WORKSPACE
+============================================================ */
+.workspace { display: flex; height: 100%; overflow: hidden; }
+.phase-sidebar {
+  width: 220px; min-width: 220px; background: var(--sidebar-bg);
+  border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 0;
+}
+.phase-nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 16px;
+  cursor: pointer; transition: all 0.1s; border-left: 2px solid transparent;
+}
+.phase-nav-item:hover { background: var(--bg3); }
+.phase-nav-item.active { background: var(--bg2); border-left-color: var(--accent); }
+.phase-status-icon { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 9px; flex-shrink: 0; }
+.phase-status-icon.done { background: var(--phase-done); border-color: var(--phase-done); color: white; }
+.phase-status-icon.active { border-color: var(--accent); background: var(--accent); color: var(--bg); }
+.phase-nav-label { font-size: 12px; font-weight: 500; color: var(--text2); line-height: 1.3; }
+.phase-nav-item.active .phase-nav-label { color: var(--text); }
+.phase-nav-item.done .phase-nav-label { color: var(--text3); }
+.phase-content { flex: 1; overflow-y: auto; padding: 24px 28px; }
+.phase-header { margin-bottom: 20px; }
+.phase-title { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
+.phase-desc { font-size: 13px; color: var(--text2); margin-top: 4px; line-height: 1.5; }
+
+/* Prompt cards */
+.prompt-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px; margin-bottom: 10px;
+}
+.prompt-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.prompt-text {
+  font-size: 12px; color: var(--text2); line-height: 1.6;
+  font-family: 'DM Mono', monospace; white-space: pre-wrap;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 6px; padding: 10px 12px; margin-bottom: 8px;
+}
+.copy-btn {
+  font-size: 11px; color: var(--text3); padding: 3px 8px;
+  border: 1px solid var(--border); border-radius: 4px; cursor: pointer;
+  background: var(--card-bg); transition: all 0.1s;
+}
+.copy-btn:hover { background: var(--bg3); color: var(--text); }
+.copy-btn.copied { color: var(--phase-done); border-color: var(--phase-done); }
+
+/* Output vault */
+.output-item {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px; margin-bottom: 8px;
+}
+.output-item-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.output-item-title { font-size: 13px; font-weight: 500; flex: 1; }
+.output-item-time { font-size: 11px; color: var(--text3); }
+.output-item-body { font-size: 12px; color: var(--text2); line-height: 1.6; white-space: pre-wrap; max-height: 120px; overflow: hidden; position: relative; }
+.output-item-body.expanded { max-height: none; }
+.output-expand { font-size: 11px; color: var(--text3); cursor: pointer; margin-top: 4px; }
+.output-expand:hover { color: var(--text); }
+
+/* Guide cards */
+.guide-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px; margin-bottom: 10px;
+}
+.guide-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+.guide-row:last-child { margin-bottom: 0; }
+.guide-text { font-size: 12px; color: var(--text2); line-height: 1.5; flex: 1; }
+
+/* Reference list */
+.ref-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.ref-item:last-child { border-bottom: none; }
+.ref-text { font-size: 12px; color: var(--text2); flex: 1; }
+.ref-num { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; min-width: 20px; }
+
+/* Checklist */
+.checklist-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+.checklist-item:last-child { border-bottom: none; }
+.checklist-item input[type="checkbox"] { width: 15px; height: 15px; cursor: pointer; accent-color: var(--accent); }
+.checklist-item label { font-size: 13px; color: var(--text2); cursor: pointer; flex: 1; }
+.checklist-item input:checked + label { text-decoration: line-through; color: var(--text3); }
+
+/* Research log */
+.log-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+.log-item:last-child { border-bottom: none; }
+.log-meta { display: flex; gap: 10px; align-items: center; margin-bottom: 6px; }
+.log-time { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; }
+.log-cat { font-size: 11px; padding: 2px 7px; border-radius: 99px; background: var(--bg3); color: var(--text2); font-weight: 500; }
+.log-body { font-size: 13px; color: var(--text2); line-height: 1.6; white-space: pre-wrap; }
+
+/* Prompt library */
+.lib-filter { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.filter-chip {
+  padding: 5px 12px; border-radius: 99px; font-size: 12px; font-weight: 500;
+  border: 1px solid var(--border); background: var(--bg2); color: var(--text2);
+  cursor: pointer; transition: all 0.1s;
+}
+.filter-chip:hover { background: var(--bg3); }
+.filter-chip.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.lib-prompt-card {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px; margin-bottom: 10px;
+}
+.lib-prompt-meta { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+.lib-phase-tag { font-size: 11px; color: var(--text3); background: var(--bg2); padding: 2px 7px; border-radius: 4px; }
+
+/* Settings */
+.theme-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 8px; }
+.theme-option {
+  border: 2px solid var(--border); border-radius: var(--radius);
+  padding: 10px 8px; text-align: center; cursor: pointer;
+  transition: all 0.15s; background: var(--card-bg);
+}
+.theme-option:hover { border-color: var(--border2); }
+.theme-option.selected { border-color: var(--accent); }
+.theme-swatch { width: 28px; height: 28px; border-radius: 50%; margin: 0 auto 6px; }
+.theme-name { font-size: 11px; color: var(--text2); }
+
+/* Two column layout */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* Divider */
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+/* Tip box */
+.tip-box { background: var(--accent-bg); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 14px; font-size: 12px; color: var(--text2); line-height: 1.5; display: flex; gap: 8px; }
+.tip-icon { font-size: 14px; flex-shrink: 0; }
+
+/* Tag pill for section labels */
+.section-tag {
+  display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px;
+  border-radius: 4px; background: var(--bg3); color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px;
+}
+
+/* Scrollable area in phase sidebar */
+.phase-sidebar-footer {
+  padding: 12px 16px; border-top: 1px solid var(--border); margin-top: auto;
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     LOGIN SCREEN
+============================================================ -->
+<div id="login-screen">
+  <div class="login-box" id="login-box">
+    <div class="login-logo">riset.ai</div>
+    <div class="login-sub">AI Research Companion — masuk untuk melanjutkan</div>
+    <div id="login-form">
+      <label class="login-label">Password</label>
+      <input type="password" class="login-input" id="login-password" placeholder="Masukkan password" onkeydown="if(event.key==='Enter')doLogin()">
+      <div class="login-error" id="login-error"></div>
+      <button class="login-btn" onclick="doLogin()">Masuk</button>
+      <div class="login-forgot" onclick="showForgot()">Lupa password?</div>
+    </div>
+    <div id="forgot-form" style="display:none">
+      <label class="login-label">Recovery Code</label>
+      <input type="text" class="login-input" id="recovery-input" placeholder="Masukkan recovery code" style="font-family:'DM Mono',monospace;letter-spacing:0.1em">
+      <div class="login-error" id="recovery-error"></div>
+      <button class="login-btn" onclick="doRecovery()" style="margin-top:12px">Verifikasi</button>
+      <div class="login-forgot" onclick="showLogin()">Kembali ke login</div>
+    </div>
+    <div id="reset-form" style="display:none">
+      <label class="login-label">Password Baru</label>
+      <input type="password" class="login-input" id="new-password" placeholder="Password baru">
+      <label class="login-label" style="margin-top:12px">Konfirmasi Password</label>
+      <input type="password" class="login-input" id="confirm-password" placeholder="Ulangi password baru">
+      <div class="login-error" id="reset-error"></div>
+      <button class="login-btn" onclick="doReset()" style="margin-top:12px">Simpan Password Baru</button>
+    </div>
+  </div>
+</div>
+
+<!-- Setup Modal (first time) -->
+<div class="modal-overlay" id="setup-modal">
+  <div class="modal" style="width:440px">
+    <div class="modal-title">Selamat datang di riset.ai 👋</div>
+    <div class="modal-sub">Buat password untuk melindungi workspace risetmu.</div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input type="password" class="form-input" id="setup-password" placeholder="Buat password">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Konfirmasi Password</label>
+      <input type="password" class="form-input" id="setup-confirm" placeholder="Ulangi password">
+    </div>
+    <div class="login-error" id="setup-error"></div>
+    <div id="setup-recovery-section" style="display:none">
+      <div class="divider"></div>
+      <div class="recovery-box">
+        <div class="recovery-title">Recovery Code — simpan ini baik-baik!</div>
+        <div class="recovery-code-display" id="generated-code"></div>
+        <div class="setup-note">Simpan kode ini di tempat aman (screenshot, notes, password manager). Kode ini digunakan jika kamu lupa password.</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="doSetup()">Buat Password</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MAIN APP
+============================================================ -->
+<div id="app">
+  <!-- Global Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">riset<span>.ai</span></div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-section">Menu</div>
+      <button class="nav-item active" id="nav-dashboard" onclick="showView('dashboard')">
+        <span class="nav-icon">⊞</span> Dashboard
+      </button>
+      <button class="nav-item" id="nav-prompts" onclick="showView('prompts')">
+        <span class="nav-icon">⌘</span> Prompt Library
+      </button>
+      <button class="nav-item" id="nav-settings" onclick="showView('settings')">
+        <span class="nav-icon">◎</span> Pengaturan
+      </button>
+    </div>
+    <div class="sidebar-bottom">
+      <button class="sidebar-btn" onclick="exportData()">↑ Export Data (JSON)</button>
+      <label class="sidebar-btn" style="cursor:pointer">
+        ↓ Import Data <input type="file" accept=".json" onchange="importData(event)" style="display:none">
+      </label>
+      <button class="sidebar-btn" onclick="doLogout()">→ Logout</button>
+    </div>
+  </div>
+
+  <!-- Main Area -->
+  <div class="main">
+    <!-- DASHBOARD VIEW -->
+    <div id="view-dashboard">
+      <div class="main-header">
+        <div>
+          <div class="main-title">Dashboard</div>
+          <div class="breadcrumb">Semua project riset</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-primary" onclick="openNewProject()">+ Project Baru</button>
+        </div>
+      </div>
+      <div class="main-content">
+        <div class="stats-row" id="stats-row"></div>
+        <div class="section-label">Project Aktif</div>
+        <div class="dashboard-grid" id="project-list"></div>
+      </div>
+    </div>
+
+    <!-- WORKSPACE VIEW -->
+    <div id="view-workspace" style="display:none; height:100%; overflow:hidden; display:none; flex-direction:column;">
+      <div class="main-header">
+        <div>
+          <div class="main-title" id="ws-title">Project</div>
+          <div class="breadcrumb" id="ws-breadcrumb">Dashboard → <span id="ws-project-name">—</span> → <span id="ws-phase-name">—</span></div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-ghost btn-sm" onclick="showView('dashboard')">← Kembali</button>
+          <button class="btn btn-ghost btn-sm" onclick="openResearchLog()">📓 Research Log</button>
+        </div>
+      </div>
+      <div style="flex:1; overflow:hidden; display:flex;">
+        <div class="phase-sidebar" id="phase-sidebar"></div>
+        <div class="phase-content" id="phase-content"></div>
+      </div>
+    </div>
+
+    <!-- PROMPTS VIEW -->
+    <div id="view-prompts" style="display:none">
+      <div class="main-header">
+        <div>
+          <div class="main-title">Prompt Library</div>
+          <div class="breadcrumb">Koleksi prompt yang telah terbukti efektif</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary btn-sm" onclick="openAddPrompt()">+ Tambah Prompt</button>
+        </div>
+      </div>
+      <div class="main-content">
+        <div class="lib-filter" id="lib-filter"></div>
+        <div id="lib-prompt-list"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS VIEW -->
+    <div id="view-settings" style="display:none">
+      <div class="main-header">
+        <div>
+          <div class="main-title">Pengaturan</div>
+          <div class="breadcrumb">Preferensi aplikasi</div>
+        </div>
+      </div>
+      <div class="main-content" style="max-width:540px">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Tema Warna</div></div>
+          <div class="section-label">Pilih tampilan yang nyaman untukmu</div>
+          <div class="theme-grid">
+            <div class="theme-option" onclick="setTheme('default')" id="theme-default">
+              <div class="theme-swatch" style="background:#f7f7f5;border:2px solid #e5e3de"></div>
+              <div class="theme-name">Default</div>
+            </div>
+            <div class="theme-option" onclick="setTheme('warm')" id="theme-warm">
+              <div class="theme-swatch" style="background:#f5ede0;border:2px solid #e8d8c0"></div>
+              <div class="theme-name">Warm</div>
+            </div>
+            <div class="theme-option" onclick="setTheme('sage')" id="theme-sage">
+              <div class="theme-swatch" style="background:#e8f0e8;border:2px solid #c8dcc8"></div>
+              <div class="theme-name">Sage</div>
+            </div>
+            <div class="theme-option" onclick="setTheme('slate')" id="theme-slate">
+              <div class="theme-swatch" style="background:#e2e8f0;border:2px solid #b8c8d8"></div>
+              <div class="theme-name">Slate</div>
+            </div>
+            <div class="theme-option" onclick="setTheme('dark')" id="theme-dark">
+              <div class="theme-swatch" style="background:#1e1e1e;border:2px solid #333"></div>
+              <div class="theme-name">Dark</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Keamanan</div></div>
+          <div class="form-group">
+            <label class="form-label">Password Lama</label>
+            <input type="password" class="form-input" id="old-pass" placeholder="Password saat ini">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password Baru</label>
+            <input type="password" class="form-input" id="new-pass" placeholder="Password baru">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Konfirmasi Password Baru</label>
+            <input type="password" class="form-input" id="confirm-pass" placeholder="Ulangi password baru">
+          </div>
+          <div class="login-error" id="change-pass-error" style="margin-bottom:8px"></div>
+          <button class="btn btn-secondary btn-sm" onclick="changePassword()">Ubah Password</button>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Recovery Code</div></div>
+          <div class="tip-box"><span class="tip-icon">ℹ</span> Recovery code digunakan jika kamu lupa password. Simpan di tempat aman.</div>
+          <button class="btn btn-ghost btn-sm" onclick="showRecoveryCode()">Lihat Recovery Code</button>
+          <div id="recovery-display" style="display:none;margin-top:12px">
+            <div class="recovery-code-display" id="rc-display-val"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Data</div></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-secondary btn-sm" onclick="exportData()">Export Semua Data (JSON)</button>
+            <label class="btn btn-secondary btn-sm" style="cursor:pointer">Import Data <input type="file" accept=".json" onchange="importData(event)" style="display:none"></label>
+            <button class="btn btn-danger btn-sm" onclick="confirmClear()">Hapus Semua Data</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="modal-overlay" id="new-project-modal">
+  <div class="modal">
+    <div class="modal-title">Project Baru</div>
+    <div class="modal-sub">Mulai perjalanan riset baru</div>
+    <div class="form-group">
+      <label class="form-label">Judul Project *</label>
+      <input type="text" class="form-input" id="np-title" placeholder="Contoh: Essay Komunikasi Digital Gen-Z">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Bidang Studi</label>
+      <select class="form-select" id="np-field">
+        <option>Ilmu Komunikasi</option><option>Psikologi</option><option>Hukum</option>
+        <option>Ekonomi</option><option>Teknik</option><option>Sastra</option>
+        <option>Sosiologi</option><option>Pendidikan</option><option>Kesehatan</option><option>Lainnya</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Deskripsi Singkat Topik Awal</label>
+      <textarea class="form-textarea" id="np-desc" placeholder="Apa yang ingin kamu teliti atau tulis?"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('new-project-modal')">Batal</button>
+      <button class="btn btn-primary" onclick="createProject()">Mulai Project</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="add-output-modal">
+  <div class="modal">
+    <div class="modal-title">Tambah Output</div>
+    <div class="modal-sub">Simpan hasil dari sesi AI</div>
+    <div class="form-group">
+      <label class="form-label">AI Tool</label>
+      <select class="form-select" id="ao-ai">
+        <option value="chatgpt">ChatGPT</option><option value="claude">Claude</option>
+        <option value="perplexity">Perplexity</option><option value="scopus">Scopus AI</option><option value="gemini">Gemini</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Judul Singkat</label>
+      <input type="text" class="form-input" id="ao-title" placeholder="Contoh: Ide brainstorming tentang media sosial">
+    </div>
+    <div class="form-group" id="ao-ref-group" style="display:none">
+      <label class="form-label">Judul Paper / Sumber</label>
+      <input type="text" class="form-input" id="ao-ref" placeholder="Contoh: Smith et al. (2023)">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Output / Konten</label>
+      <textarea class="form-textarea large" id="ao-content" placeholder="Paste output dari AI di sini..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('add-output-modal')">Batal</button>
+      <button class="btn btn-primary" onclick="saveOutput()">Simpan Output</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="add-ref-modal">
+  <div class="modal">
+    <div class="modal-title">Tambah Referensi</div>
+    <div class="form-group">
+      <label class="form-label">Judul Paper</label>
+      <input type="text" class="form-input" id="ref-title" placeholder="Judul lengkap paper">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Penulis & Tahun</label>
+      <input type="text" class="form-input" id="ref-author" placeholder="Contoh: Smith, J. et al. (2023)">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Link Scopus (opsional)</label>
+      <input type="text" class="form-input" id="ref-link" placeholder="https://scopus.com/...">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('add-ref-modal')">Batal</button>
+      <button class="btn btn-primary" onclick="saveRef()">Simpan Referensi</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="log-modal">
+  <div class="modal" style="width:560px">
+    <div class="modal-title">Research Log</div>
+    <div class="modal-sub" id="log-project-name"></div>
+    <div class="form-group">
+      <label class="form-label">Kategori</label>
+      <select class="form-select" id="log-cat">
+        <option>Keputusan Topik</option><option>Temuan Menarik</option>
+        <option>Masalah yang Ditemukan</option><option>Catatan Umum</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Catatan</label>
+      <textarea class="form-textarea large" id="log-content" placeholder="Tulis catatan risetmu di sini..."></textarea>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="saveLogEntry()">+ Tambah Entri</button>
+    <div class="divider"></div>
+    <div id="log-list" style="max-height:280px;overflow-y:auto"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('log-modal')">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="add-prompt-modal">
+  <div class="modal">
+    <div class="modal-title">Tambah Prompt Custom</div>
+    <div class="form-group">
+      <label class="form-label">AI Tool</label>
+      <select class="form-select" id="ap-ai">
+        <option value="chatgpt">ChatGPT</option><option value="claude">Claude</option>
+        <option value="perplexity">Perplexity</option><option value="scopus">Scopus AI</option><option value="gemini">Gemini</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Fase</label>
+      <select class="form-select" id="ap-phase">
+        <option value="1">Fase 1 — Brainstorming</option>
+        <option value="2">Fase 2 — Riset Literatur</option>
+        <option value="3">Fase 3 — Outline</option>
+        <option value="3.5">Fase 3.5 — Challenge Argumen</option>
+        <option value="4">Fase 4 — Drafting</option>
+        <option value="5">Fase 5 — Review & Finalisasi</option>
+        <option value="global">Global (semua fase)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Judul Prompt</label>
+      <input type="text" class="form-input" id="ap-title" placeholder="Contoh: Brainstorming sudut pandang alternatif">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Teks Prompt</label>
+      <textarea class="form-textarea large" id="ap-content" placeholder="Tulis prompt di sini..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('add-prompt-modal')">Batal</button>
+      <button class="btn btn-primary" onclick="saveCustomPrompt()">Simpan Prompt</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA & STATE
+// ============================================================
+const KEYS = {
+  auth: 'risetai_auth',
+  projects: 'risetai_projects',
+  prompts: 'risetai_prompts',
+  settings: 'risetai_settings',
+  session: 'risetai_session'
+};
+
+let state = {
+  currentProjectId: null,
+  currentPhase: 0,
+  currentOutput: { phase: 0, projectId: null },
+  libFilter: { ai: 'all', phase: 'all' }
+};
+
+// ============================================================
+// STORAGE HELPERS
+// ============================================================
+function load(key) {
+  try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
+}
+function save(key, val) {
+  localStorage.setItem(key, JSON.stringify(val));
+}
+function getProjects() { return load(KEYS.projects) || []; }
+function saveProjects(p) { save(KEYS.projects, p); }
+function getSettings() { return load(KEYS.settings) || { theme: 'default' }; }
+function saveSettings(s) { save(KEYS.settings, s); }
+function getPrompts() { return load(KEYS.prompts) || getDefaultPrompts(); }
+function savePrompts(p) { save(KEYS.prompts, p); }
+
+// ============================================================
+// AUTH
+// ============================================================
+function hashStr(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const ch = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + ch; hash |= 0;
+  }
+  return hash.toString(36);
+}
+function genRecoveryCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = 'RISET-';
+  for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  code += '-';
+  for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code;
+}
+function getAuth() { return load(KEYS.auth); }
+
+function initApp() {
+  const settings = getSettings();
+  applyTheme(settings.theme);
+  const auth = getAuth();
+  if (!auth) {
+    showSetupModal();
+    return;
+  }
+  const session = sessionStorage.getItem(KEYS.session);
+  if (session === 'ok') {
+    launchApp();
+  } else {
+    document.getElementById('login-screen').style.display = 'flex';
+  }
+}
+
+function showSetupModal() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('setup-modal').classList.add('open');
+}
+
+function doSetup() {
+  const pass = document.getElementById('setup-password').value;
+  const conf = document.getElementById('setup-confirm').value;
+  const err = document.getElementById('setup-error');
+  if (pass.length < 4) { err.textContent = 'Password minimal 4 karakter.'; return; }
+  if (pass !== conf) { err.textContent = 'Password tidak cocok.'; return; }
+  const recovery = genRecoveryCode();
+  save(KEYS.auth, { hash: hashStr(pass), recovery: hashStr(recovery), recoveryPlain: recovery });
+  document.getElementById('setup-recovery-section').style.display = 'block';
+  document.getElementById('generated-code').textContent = recovery;
+  document.querySelector('#setup-modal .btn-primary').textContent = 'Lanjut ke Aplikasi';
+  document.querySelector('#setup-modal .btn-primary').onclick = function() {
+    closeModal('setup-modal');
+    sessionStorage.setItem(KEYS.session, 'ok');
+    launchApp();
+  };
+  err.textContent = '';
+}
+
+function doLogin() {
+  const pass = document.getElementById('login-password').value;
+  const auth = getAuth();
+  const err = document.getElementById('login-error');
+  if (!auth) return;
+  if (hashStr(pass) === auth.hash) {
+    sessionStorage.setItem(KEYS.session, 'ok');
+    document.getElementById('login-screen').style.display = 'none';
+    launchApp();
+  } else {
+    err.textContent = 'Password salah. Coba lagi.';
+  }
+}
+
+function showForgot() {
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('forgot-form').style.display = 'block';
+}
+function showLogin() {
+  document.getElementById('forgot-form').style.display = 'none';
+  document.getElementById('reset-form').style.display = 'none';
+  document.getElementById('login-form').style.display = 'block';
+}
+
+function doRecovery() {
+  const code = document.getElementById('recovery-input').value.trim().toUpperCase();
+  const auth = getAuth();
+  const err = document.getElementById('recovery-error');
+  if (hashStr(code) === auth.recovery || code === auth.recoveryPlain) {
+    document.getElementById('forgot-form').style.display = 'none';
+    document.getElementById('reset-form').style.display = 'block';
+  } else {
+    err.textContent = 'Recovery code salah.';
+  }
+}
+
+function doReset() {
+  const np = document.getElementById('new-password').value;
+  const cp = document.getElementById('confirm-password').value;
+  const err = document.getElementById('reset-error');
+  if (np.length < 4) { err.textContent = 'Password minimal 4 karakter.'; return; }
+  if (np !== cp) { err.textContent = 'Password tidak cocok.'; return; }
+  const auth = getAuth();
+  auth.hash = hashStr(np);
+  save(KEYS.auth, auth);
+  sessionStorage.setItem(KEYS.session, 'ok');
+  document.getElementById('login-screen').style.display = 'none';
+  launchApp();
+}
+
+function doLogout() {
+  sessionStorage.removeItem(KEYS.session);
+  location.reload();
+}
+
+function changePassword() {
+  const old = document.getElementById('old-pass').value;
+  const np = document.getElementById('new-pass').value;
+  const cp = document.getElementById('confirm-pass').value;
+  const err = document.getElementById('change-pass-error');
+  const auth = getAuth();
+  if (hashStr(old) !== auth.hash) { err.textContent = 'Password lama salah.'; return; }
+  if (np.length < 4) { err.textContent = 'Password baru minimal 4 karakter.'; return; }
+  if (np !== cp) { err.textContent = 'Password baru tidak cocok.'; return; }
+  auth.hash = hashStr(np);
+  save(KEYS.auth, auth);
+  err.style.color = 'var(--phase-done)';
+  err.textContent = 'Password berhasil diubah.';
+  ['old-pass','new-pass','confirm-pass'].forEach(id => document.getElementById(id).value = '');
+}
+
+function showRecoveryCode() {
+  const auth = getAuth();
+  const disp = document.getElementById('recovery-display');
+  disp.style.display = disp.style.display === 'none' ? 'block' : 'none';
+  document.getElementById('rc-display-val').textContent = auth.recoveryPlain || '(kode lama tidak tersimpan — export data dan buat ulang)';
+}
+
+// ============================================================
+// APP LAUNCH & VIEWS
+// ============================================================
+function launchApp() {
+  document.getElementById('app').classList.add('visible');
+  document.getElementById('app').style.display = 'flex';
+  const settings = getSettings();
+  applyTheme(settings.theme);
+  updateThemeUI(settings.theme);
+  showView('dashboard');
+}
+
+function showView(view) {
+  ['dashboard','workspace','prompts','settings'].forEach(v => {
+    const el = document.getElementById('view-' + v);
+    if (el) el.style.display = 'none';
+  });
+  ['nav-dashboard','nav-prompts','nav-settings'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('active');
+  });
+  const viewEl = document.getElementById('view-' + view);
+  if (viewEl) viewEl.style.display = view === 'workspace' ? 'flex' : 'block';
+  if (view === 'workspace') viewEl.style.flexDirection = 'column';
+  if (document.getElementById('nav-' + view)) document.getElementById('nav-' + view).classList.add('active');
+
+  if (view === 'dashboard') renderDashboard();
+  if (view === 'prompts') renderPromptLibrary();
+  if (view === 'settings') { const s = getSettings(); updateThemeUI(s.theme); }
+}
+
+function openProject(id) {
+  state.currentProjectId = id;
+  const projects = getProjects();
+  const project = projects.find(p => p.id === id);
+  if (!project) return;
+  project.lastAccessed = Date.now();
+  saveProjects(projects);
+  document.getElementById('ws-title').textContent = project.title;
+  document.getElementById('ws-project-name').textContent = project.title;
+  showView('workspace');
+  renderPhaseSidebar(project);
+  renderPhase(project, state.currentPhase || project.activePhase || 0);
+}
+
+// ============================================================
+// THEME
+// ============================================================
+function setTheme(theme) {
+  applyTheme(theme);
+  const settings = getSettings();
+  settings.theme = theme;
+  saveSettings(settings);
+  updateThemeUI(theme);
+}
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme === 'default' ? '' : theme);
+}
+function updateThemeUI(theme) {
+  document.querySelectorAll('.theme-option').forEach(el => el.classList.remove('selected'));
+  const el = document.getElementById('theme-' + theme);
+  if (el) el.classList.add('selected');
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function renderDashboard() {
+  const projects = getProjects().sort((a,b) => (b.lastAccessed||0) - (a.lastAccessed||0));
+  const stats = document.getElementById('stats-row');
+  const total = projects.length;
+  const done = projects.filter(p => p.completed).length;
+  const active = projects.filter(p => !p.completed).length;
+  stats.innerHTML = `
+    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">Total Project</div></div>
+    <div class="stat-card"><div class="stat-num">${active}</div><div class="stat-label">Sedang Berjalan</div></div>
+    <div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Selesai</div></div>
+  `;
+  const list = document.getElementById('project-list');
+  if (projects.length === 0) {
+    list.innerHTML = `<div class="empty-state">
+      <div class="empty-title">Belum ada project riset</div>
+      <div class="empty-sub">Mulai project pertamamu dan biarkan riset.ai memandumu langkah demi langkah.</div>
+      <button class="btn btn-primary" onclick="openNewProject()">+ Buat Project Baru</button>
+    </div>`;
+    return;
+  }
+  list.innerHTML = projects.map(p => {
+    const phases = p.phases || [];
+    const done = phases.filter(ph => ph.status === 'done').length;
+    const pct = Math.round((done / 6) * 100);
+    const activePhName = PHASE_DEFS[p.activePhase || 0]?.name || '—';
+    return `<div class="project-card" onclick="openProject('${p.id}')">
+      <div class="project-card-info">
+        <div class="project-card-title">${escHtml(p.title)}</div>
+        <div class="project-card-meta">
+          <span>${escHtml(p.field)}</span>
+          <span>Fase aktif: ${escHtml(activePhName)}</span>
+          <span>${formatDate(p.createdAt)}</span>
+        </div>
+      </div>
+      <div class="project-card-progress">
+        <div class="progress-label"><span>Progress</span><span>${done}/6 fase</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="project-card-actions" onclick="event.stopPropagation()">
+        <button class="btn btn-ghost btn-sm" onclick="openProject('${p.id}')">Buka</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteProject('${p.id}')">Hapus</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// PROJECT CRUD
+// ============================================================
+function openNewProject() { openModal('new-project-modal'); }
+
+function createProject() {
+  const title = document.getElementById('np-title').value.trim();
+  if (!title) { alert('Judul project tidak boleh kosong.'); return; }
+  const field = document.getElementById('np-field').value;
+  const desc = document.getElementById('np-desc').value.trim();
+  const project = {
+    id: 'p_' + Date.now(),
+    title, field, desc,
+    createdAt: Date.now(),
+    lastAccessed: Date.now(),
+    activePhase: 0,
+    completed: false,
+    phases: PHASE_DEFS.map(() => ({ status: 'idle', outputs: [], notes: '', decision: '', refs: [], checklist: [], sections: [] })),
+    log: []
+  };
+  const projects = getProjects();
+  projects.push(project);
+  saveProjects(projects);
+  closeModal('new-project-modal');
+  document.getElementById('np-title').value = '';
+  document.getElementById('np-desc').value = '';
+  openProject(project.id);
+}
+
+function deleteProject(id) {
+  if (!confirm('Hapus project ini? Data tidak bisa dikembalikan.')) return;
+  const projects = getProjects().filter(p => p.id !== id);
+  saveProjects(projects);
+  renderDashboard();
+}
+
+// ============================================================
+// PHASE DEFINITIONS
+// ============================================================
+const PHASE_DEFS = [
+  { name: 'Brainstorming Ide', desc: 'Eksplorasi dan kembangkan ide riset dari berbagai sudut pandang sebelum memilih topik terbaik.' },
+  { name: 'Riset Literatur', desc: 'Kumpulkan paper akademik dari Scopus dan informasi terkini dari Perplexity sebagai landasan teori.' },
+  { name: 'Outline & Struktur', desc: 'Bangun kerangka argumen yang kuat sebelum mulai menulis.' },
+  { name: 'Challenge Argumen', desc: 'Uji ketahanan argumenmu dengan Gemini dan Claude sebelum drafting.' },
+  { name: 'Drafting & Penulisan', desc: 'Tulis essay bagian per bagian dengan panduan AI yang tepat.' },
+  { name: 'Review & Finalisasi', desc: 'Poles, verifikasi fakta, dan finalisasi essay sebelum dikumpulkan.' }
+];
+
+// ============================================================
+// PHASE SIDEBAR
+// ============================================================
+function renderPhaseSidebar(project) {
+  const sidebar = document.getElementById('phase-sidebar');
+  const phases = project.phases || [];
+  sidebar.innerHTML = PHASE_DEFS.map((def, i) => {
+    const ph = phases[i] || {};
+    const status = ph.status || 'idle';
+    const isActive = state.currentPhase === i;
+    let iconClass = status === 'done' ? 'done' : (isActive ? 'active' : '');
+    let iconContent = status === 'done' ? '✓' : (i + 1);
+    return `<div class="phase-nav-item ${isActive ? 'active' : ''} ${status === 'done' ? 'done' : ''}" onclick="renderPhase(getCurrentProject(), ${i})">
+      <div class="phase-status-icon ${iconClass}">${iconContent}</div>
+      <div class="phase-nav-label">${i === 3 ? '3.5 — ' : (i+1) + ' — '}${def.name}</div>
+    </div>`;
+  }).join('');
+}
+
+function getCurrentProject() {
+  const projects = getProjects();
+  return projects.find(p => p.id === state.currentProjectId);
+}
+
+function saveCurrentProject(project) {
+  const projects = getProjects();
+  const idx = projects.findIndex(p => p.id === project.id);
+  if (idx !== -1) { projects[idx] = project; saveProjects(projects); }
+}
+
+// ============================================================
+// PHASE CONTENT RENDERER
+// ============================================================
+function renderPhase(project, phaseIdx) {
+  state.currentPhase = phaseIdx;
+  document.getElementById('ws-phase-name').textContent = (phaseIdx === 3 ? '3.5 — ' : (phaseIdx+1)+' — ') + PHASE_DEFS[phaseIdx].name;
+  const ph = project.phases[phaseIdx];
+  if (ph.status === 'idle') { ph.status = 'active'; saveCurrentProject(project); }
+  renderPhaseSidebar(project);
+
+  const content = document.getElementById('phase-content');
+  const def = PHASE_DEFS[phaseIdx];
+  const prompts = getPhasePrompts(phaseIdx);
+
+  let html = `<div class="phase-header">
+    <div class="phase-title">${phaseIdx === 3 ? '3.5' : phaseIdx+1}. ${def.name}</div>
+    <div class="phase-desc">${def.desc}</div>
+  </div>`;
+
+  // Guide
+  html += `<div class="card"><div class="card-header"><div class="card-title">Panduan AI</div></div>${getGuideHTML(phaseIdx)}</div>`;
+
+  // Prompts
+  html += `<div class="card"><div class="card-header"><div class="card-title">Prompt Siap Pakai</div><button class="btn btn-ghost btn-xs" onclick="openAddPrompt()">+ Tambah</button></div>`;
+  html += prompts.map(p => `<div class="prompt-card">
+    <div class="prompt-card-header">
+      <span class="ai-badge ${p.ai}"><span class="ai-dot"></span>${aiLabel(p.ai)}</span>
+      <button class="copy-btn" onclick="copyPrompt(this, \`${escJs(p.content)}\`)">Salin</button>
+    </div>
+    ${p.title ? `<div style="font-size:12px;font-weight:500;margin-bottom:6px;color:var(--text2)">${escHtml(p.title)}</div>` : ''}
+    <div class="prompt-text">${escHtml(p.content)}</div>
+  </div>`).join('');
+  html += `</div>`;
+
+  // Phase-specific extras
+  if (phaseIdx === 1) {
+    html += renderRefSection(project, phaseIdx);
+  }
+  if (phaseIdx === 2) {
+    html += `<div class="card"><div class="card-header"><div class="card-title">Outline Aktif</div></div>
+      <div class="section-tag">Edit langsung di bawah</div>
+      <textarea class="form-textarea large" id="outline-active" placeholder="Paste atau tulis outline final di sini. Bisa dilihat dari fase lain sebagai referensi." onchange="saveOutline()">${escHtml(ph.outline||'')}</textarea>
+    </div>`;
+  }
+  if (phaseIdx === 3) {
+    html += renderChallengeSection(project, phaseIdx);
+  }
+  if (phaseIdx === 4) {
+    html += renderDraftSections(project, phaseIdx);
+  }
+  if (phaseIdx === 5) {
+    html += renderChecklist(project, phaseIdx);
+  }
+
+  // Output Vault
+  html += renderOutputVault(project, phaseIdx);
+
+  // Decision / Notes
+  html += `<div class="card"><div class="card-header"><div class="card-title">Keputusan & Catatan Fase</div></div>
+    <textarea class="form-textarea" id="phase-decision" placeholder="Catat keputusan penting dari fase ini..." onchange="saveDecision()">${escHtml(ph.decision||'')}</textarea>
+  </div>`;
+
+  // Mark done button
+  if (ph.status !== 'done') {
+    html += `<button class="btn btn-primary" onclick="markPhaseDone(${phaseIdx})" style="margin-bottom:24px">Tandai Fase Selesai ✓</button>`;
+  } else {
+    html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:24px;font-size:13px;color:var(--phase-done)">✓ Fase ini sudah selesai <button class="btn btn-ghost btn-sm" onclick="reopenPhase(${phaseIdx})">Buka Kembali</button></div>`;
+  }
+
+  content.innerHTML = html;
+
+  // Bind live events
+  const od = document.getElementById('phase-decision');
+  if (od) od.addEventListener('input', saveDecision);
+  const oa = document.getElementById('outline-active');
+  if (oa) oa.addEventListener('input', saveOutline);
+}
+
+function getGuideHTML(phaseIdx) {
+  const guides = [
+    [
+      { ai: 'chatgpt', text: 'Gunakan untuk menghasilkan ide-ide liar dan divergen. ChatGPT unggul untuk brainstorming awal tanpa filter.' },
+      { ai: 'claude', text: 'Gunakan untuk eksplorasi mendalam dan evaluasi kritis dari kandidat ide yang sudah ada.' },
+      { ai: 'perplexity', text: 'Cek apakah topik yang kamu minati sudah jenuh atau masih ada celah di literatur.' }
+    ],
+    [
+      { ai: 'scopus', text: 'Cari highly cited papers (sitasi > 50) dan perhatikan tren riset 5–10 tahun terakhir untuk landasan teori yang kredibel.' },
+      { ai: 'perplexity', text: 'Kumpulkan konteks terkini, statistik terbaru, dan laporan yang belum masuk jurnal akademik.' }
+    ],
+    [
+      { ai: 'claude', text: 'Minta Claude membangun outline dengan thesis statement yang kuat berdasarkan sintesis literaturmu.' },
+      { ai: 'perplexity', text: 'Validasi setiap klaim utama dalam outline sebelum mulai menulis panjang.' },
+      { ai: 'gemini', text: 'Tulis outline langsung ke Google Docs menggunakan Gemini di dalam Docs.' }
+    ],
+    [
+      { ai: 'gemini', text: 'Di Google Docs, minta Gemini: "Cari celah logika dalam argumen ini." — filter pertama untuk struktur & konsistensi.' },
+      { ai: 'claude', text: 'Minta Claude bermain sebagai devil\'s advocate: "Serang argumen ini dari sudut pandang lawan." — filter kedua untuk ketahanan argumen.' }
+    ],
+    [
+      { ai: 'claude', text: 'Tulis draft bagian per bagian (intro → body → kesimpulan). Jangan minta sekaligus agar hasilnya lebih terkontrol.' },
+      { ai: 'scopus', text: 'Sisipkan sitasi valid dari Scopus ke dalam setiap klaim penting di draft.' }
+    ],
+    [
+      { ai: 'claude', text: 'Review akhir untuk koherensi logika, kualitas argumen, dan gaya bahasa akademis.' },
+      { ai: 'perplexity', text: 'Final fact-check: verifikasi semua data, statistik, dan klaim sebelum dikumpulkan.' },
+      { ai: 'gemini', text: 'Gunakan Gemini di Google Docs untuk formatting akhir, cek tata bahasa, dan ekspor PDF.' }
+    ]
+  ];
+  return guides[phaseIdx].map(g => `<div class="guide-row">
+    <span class="ai-badge ${g.ai}" style="flex-shrink:0"><span class="ai-dot"></span>${aiLabel(g.ai)}</span>
+    <span class="guide-text">${escHtml(g.text)}</span>
+  </div>`).join('');
+}
+
+function renderOutputVault(project, phaseIdx) {
+  const ph = project.phases[phaseIdx];
+  const outputs = ph.outputs || [];
+  return `<div class="card"><div class="card-header"><div class="card-title">Output Vault</div>
+    <button class="btn btn-ghost btn-xs" onclick="openAddOutput(${phaseIdx})">+ Tambah Output</button>
+  </div>
+  ${outputs.length === 0 ? '<div style="font-size:12px;color:var(--text3);padding:8px 0">Belum ada output tersimpan. Klik "+ Tambah Output" setelah selesai sesi dengan AI.</div>' :
+    outputs.map((o, i) => `<div class="output-item">
+      <div class="output-item-header">
+        <span class="ai-badge ${o.ai}"><span class="ai-dot"></span>${aiLabel(o.ai)}</span>
+        <span class="output-item-title">${escHtml(o.title)}</span>
+        <span class="output-item-time">${formatDate(o.savedAt)}</span>
+        <button class="btn btn-danger btn-xs" onclick="deleteOutput(${phaseIdx}, ${i})">×</button>
+      </div>
+      ${o.ref ? `<div style="font-size:11px;color:var(--text3);margin-bottom:6px">Sumber: ${escHtml(o.ref)}</div>` : ''}
+      <div class="output-item-body" id="out-body-${phaseIdx}-${i}">${escHtml(o.content)}</div>
+      ${o.content.length > 200 ? `<div class="output-expand" onclick="toggleExpand(${phaseIdx},${i})">Lihat selengkapnya ▾</div>` : ''}
+    </div>`).join('')
+  }</div>`;
+}
+
+function renderRefSection(project, phaseIdx) {
+  const ph = project.phases[phaseIdx];
+  const refs = ph.refs || [];
+  return `<div class="card"><div class="card-header"><div class="card-title">Daftar Referensi Sementara</div>
+    <button class="btn btn-ghost btn-xs" onclick="openAddRef(${phaseIdx})">+ Tambah</button>
+  </div>
+  ${refs.length === 0 ? '<div style="font-size:12px;color:var(--text3)">Belum ada referensi. Tambahkan paper dari Scopus di sini.</div>' :
+    refs.map((r, i) => `<div class="ref-item">
+      <span class="ref-num">[${i+1}]</span>
+      <div class="ref-text"><strong>${escHtml(r.title)}</strong><br>${escHtml(r.author)}${r.link ? ` — <a href="${escHtml(r.link)}" target="_blank" style="color:var(--tag-scopus)">Scopus ↗</a>` : ''}</div>
+      <button class="btn btn-danger btn-xs" onclick="deleteRef(${phaseIdx}, ${i})">×</button>
+    </div>`).join('')
+  }</div>`;
+}
+
+function renderChallengeSection(project, phaseIdx) {
+  const ph = project.phases[phaseIdx];
+  return `<div class="card"><div class="card-title" style="margin-bottom:12px">Hasil Challenge</div>
+    <div class="tip-box"><span class="tip-icon">💡</span>Catat semua kelemahan yang ditemukan Gemini dan Claude, lalu perkuat bagian tersebut sebelum lanjut drafting.</div>
+    <div class="form-group"><label class="form-label">Kelemahan yang ditemukan Gemini</label>
+      <textarea class="form-textarea" id="challenge-gemini" placeholder="Paste hasil challenge dari Gemini di sini..." onchange="saveChallenge('gemini')">${escHtml(ph.challengeGemini||'')}</textarea>
+    </div>
+    <div class="form-group"><label class="form-label">Kelemahan yang ditemukan Claude (devil's advocate)</label>
+      <textarea class="form-textarea" id="challenge-claude" placeholder="Paste hasil challenge dari Claude di sini..." onchange="saveChallenge('claude')">${escHtml(ph.challengeClaude||'')}</textarea>
+    </div>
+    <div class="form-group"><label class="form-label">Tindak Lanjut — bagian yang perlu diperkuat</label>
+      <textarea class="form-textarea" id="challenge-followup" placeholder="Bagian outline mana yang perlu diperbaiki berdasarkan feedback?" onchange="saveChallenge('followup')">${escHtml(ph.challengeFollowup||'')}</textarea>
+    </div>
+  </div>`;
+}
+
+function renderDraftSections(project, phaseIdx) {
+  const ph = project.phases[phaseIdx];
+  const sections = ph.sections || [];
+  return `<div class="card"><div class="card-header"><div class="card-title">Sections Draft</div>
+    <button class="btn btn-ghost btn-xs" onclick="addDraftSection(${phaseIdx})">+ Section Baru</button>
+  </div>
+  <div class="tip-box"><span class="tip-icon">📝</span>Paste output Claude ke Google Docs secara bertahap. Jangan tunggu semua section selesai.</div>
+  ${sections.length === 0 ? '<div style="font-size:12px;color:var(--text3)">Belum ada section. Tambahkan section essay (contoh: Pendahuluan, Tinjauan Literatur, Pembahasan, Kesimpulan).</div>' :
+    sections.map((s, i) => `<div style="margin-bottom:12px;padding:12px;border:1px solid var(--border);border-radius:var(--radius)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="font-size:13px;font-weight:500">${escHtml(s.name)}</span>
+        <button class="btn btn-danger btn-xs" onclick="deleteDraftSection(${phaseIdx}, ${i})">×</button>
+      </div>
+      <textarea class="form-textarea" placeholder="Catatan atau draft section ini..." style="min-height:60px" onchange="saveSectionNote(${phaseIdx},${i},this.value)">${escHtml(s.note||'')}</textarea>
+    </div>`).join('')
+  }</div>`;
+}
+
+function renderChecklist(project, phaseIdx) {
+  const items = [
+    'Semua klaim sudah diverifikasi dengan Perplexity',
+    'Argumen sudah di-challenge di Fase 3.5',
+    'Sitasi akademik sudah lengkap dari Scopus',
+    'Outline awal sudah diikuti dengan konsisten',
+    'Formatting sudah dirapikan di Google Docs',
+    'Draft final sudah tersimpan di Google Docs'
+  ];
+  const ph = project.phases[phaseIdx];
+  const checked = ph.checklist || [];
+  return `<div class="card"><div class="card-header"><div class="card-title">Checklist Finalisasi</div></div>
+    ${items.map((item, i) => `<div class="checklist-item">
+      <input type="checkbox" id="chk-${i}" ${checked[i] ? 'checked' : ''} onchange="saveChecklist(${phaseIdx}, ${i}, this.checked)">
+      <label for="chk-${i}">${item}</label>
+    </div>`).join('')}
+  </div>`;
+}
+
+// ============================================================
+// PHASE ACTIONS
+// ============================================================
+function markPhaseDone(phaseIdx) {
+  const project = getCurrentProject();
+  project.phases[phaseIdx].status = 'done';
+  if (phaseIdx < 5) {
+    project.activePhase = phaseIdx + 1;
+    if (project.phases[phaseIdx + 1].status === 'idle') project.phases[phaseIdx + 1].status = 'idle';
+  } else {
+    project.completed = true;
+  }
+  saveCurrentProject(project);
+  renderPhaseSidebar(project);
+  renderPhase(project, phaseIdx);
+  if (phaseIdx < 5) setTimeout(() => renderPhase(getCurrentProject(), phaseIdx + 1), 300);
+}
+
+function reopenPhase(phaseIdx) {
+  const project = getCurrentProject();
+  project.phases[phaseIdx].status = 'active';
+  project.completed = false;
+  saveCurrentProject(project);
+  renderPhaseSidebar(project);
+  renderPhase(project, phaseIdx);
+}
+
+function saveDecision() {
+  const project = getCurrentProject();
+  const val = document.getElementById('phase-decision')?.value || '';
+  project.phases[state.currentPhase].decision = val;
+  saveCurrentProject(project);
+}
+
+function saveOutline() {
+  const project = getCurrentProject();
+  const val = document.getElementById('outline-active')?.value || '';
+  project.phases[state.currentPhase].outline = val;
+  saveCurrentProject(project);
+}
+
+function saveChallenge(type) {
+  const project = getCurrentProject();
+  const ph = project.phases[state.currentPhase];
+  if (type === 'gemini') ph.challengeGemini = document.getElementById('challenge-gemini')?.value || '';
+  if (type === 'claude') ph.challengeClaude = document.getElementById('challenge-claude')?.value || '';
+  if (type === 'followup') ph.challengeFollowup = document.getElementById('challenge-followup')?.value || '';
+  saveCurrentProject(project);
+}
+
+function saveChecklist(phaseIdx, itemIdx, val) {
+  const project = getCurrentProject();
+  const ph = project.phases[phaseIdx];
+  if (!ph.checklist) ph.checklist = [];
+  ph.checklist[itemIdx] = val;
+  saveCurrentProject(project);
+}
+
+function saveSectionNote(phaseIdx, sectIdx, val) {
+  const project = getCurrentProject();
+  project.phases[phaseIdx].sections[sectIdx].note = val;
+  saveCurrentProject(project);
+}
+
+function addDraftSection(phaseIdx) {
+  const name = prompt('Nama section (contoh: Pendahuluan):');
+  if (!name) return;
+  const project = getCurrentProject();
+  if (!project.phases[phaseIdx].sections) project.phases[phaseIdx].sections = [];
+  project.phases[phaseIdx].sections.push({ name: name.trim(), note: '' });
+  saveCurrentProject(project);
+  renderPhase(project, phaseIdx);
+}
+
+function deleteDraftSection(phaseIdx, idx) {
+  if (!confirm('Hapus section ini?')) return;
+  const project = getCurrentProject();
+  project.phases[phaseIdx].sections.splice(idx, 1);
+  saveCurrentProject(project);
+  renderPhase(project, phaseIdx);
+}
+
+// ============================================================
+// OUTPUT VAULT
+// ============================================================
+function openAddOutput(phaseIdx) {
+  state.currentOutput = { phase: phaseIdx, projectId: state.currentProjectId };
+  const isPhase2 = phaseIdx === 1;
+  document.getElementById('ao-ref-group').style.display = isPhase2 ? 'block' : 'none';
+  openModal('add-output-modal');
+}
+
+function saveOutput() {
+  const ai = document.getElementById('ao-ai').value;
+  const title = document.getElementById('ao-title').value.trim();
+  const content = document.getElementById('ao-content').value.trim();
+  const ref = document.getElementById('ao-ref').value.trim();
+  if (!title || !content) { alert('Judul dan konten wajib diisi.'); return; }
+  const project = getCurrentProject();
+  const phaseIdx = state.currentOutput.phase;
+  project.phases[phaseIdx].outputs.push({ ai, title, content, ref, savedAt: Date.now() });
+  saveCurrentProject(project);
+  closeModal('add-output-modal');
+  ['ao-title','ao-content','ao-ref'].forEach(id => document.getElementById(id).value = '');
+  renderPhase(getCurrentProject(), phaseIdx);
+}
+
+function deleteOutput(phaseIdx, idx) {
+  if (!confirm('Hapus output ini?')) return;
+  const project = getCurrentProject();
+  project.phases[phaseIdx].outputs.splice(idx, 1);
+  saveCurrentProject(project);
+  renderPhase(project, phaseIdx);
+}
+
+function toggleExpand(phaseIdx, idx) {
+  const el = document.getElementById(`out-body-${phaseIdx}-${idx}`);
+  if (el) el.classList.toggle('expanded');
+}
+
+// ============================================================
+// REFERENCES
+// ============================================================
+function openAddRef(phaseIdx) {
+  state.currentOutput.phase = phaseIdx;
+  openModal('add-ref-modal');
+}
+
+function saveRef() {
+  const title = document.getElementById('ref-title').value.trim();
+  const author = document.getElementById('ref-author').value.trim();
+  const link = document.getElementById('ref-link').value.trim();
+  if (!title) { alert('Judul paper wajib diisi.'); return; }
+  const project = getCurrentProject();
+  const phaseIdx = state.currentOutput.phase;
+  if (!project.phases[phaseIdx].refs) project.phases[phaseIdx].refs = [];
+  project.phases[phaseIdx].refs.push({ title, author, link });
+  saveCurrentProject(project);
+  closeModal('add-ref-modal');
+  ['ref-title','ref-author','ref-link'].forEach(id => document.getElementById(id).value = '');
+  renderPhase(getCurrentProject(), phaseIdx);
+}
+
+function deleteRef(phaseIdx, idx) {
+  const project = getCurrentProject();
+  project.phases[phaseIdx].refs.splice(idx, 1);
+  saveCurrentProject(project);
+  renderPhase(project, phaseIdx);
+}
+
+// ============================================================
+// RESEARCH LOG
+// ============================================================
+function openResearchLog() {
+  const project = getCurrentProject();
+  if (!project) return;
+  document.getElementById('log-project-name').textContent = project.title;
+  renderLogList(project);
+  openModal('log-modal');
+}
+
+function renderLogList(project) {
+  const list = document.getElementById('log-list');
+  const entries = (project.log || []).slice().reverse();
+  if (entries.length === 0) {
+    list.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:8px 0">Belum ada entri log.</div>';
+    return;
+  }
+  list.innerHTML = entries.map(e => `<div class="log-item">
+    <div class="log-meta"><span class="log-time">${formatDateFull(e.savedAt)}</span><span class="log-cat">${escHtml(e.cat)}</span></div>
+    <div class="log-body">${escHtml(e.content)}</div>
+  </div>`).join('');
+}
+
+function saveLogEntry() {
+  const cat = document.getElementById('log-cat').value;
+  const content = document.getElementById('log-content').value.trim();
+  if (!content) return;
+  const project = getCurrentProject();
+  if (!project.log) project.log = [];
+  project.log.push({ cat, content, savedAt: Date.now() });
+  saveCurrentProject(project);
+  document.getElementById('log-content').value = '';
+  renderLogList(getCurrentProject());
+}
+
+// ============================================================
+// PROMPT LIBRARY
+// ============================================================
+function renderPromptLibrary() {
+  const allPrompts = getPrompts();
+  const filterAI = state.libFilter.ai;
+  const filterPhase = state.libFilter.phase;
+
+  const aiList = ['all','chatgpt','claude','perplexity','scopus','gemini'];
+  const phaseList = ['all','1','2','3','3.5','4','5','global'];
+  const phaseLabels = { all:'Semua Fase','1':'F1','2':'F2','3':'F3','3.5':'F3.5','4':'F4','5':'F5','global':'Global' };
+
+  document.getElementById('lib-filter').innerHTML =
+    `<div style="display:flex;gap:6px;flex-wrap:wrap">` +
+    aiList.map(a => `<div class="filter-chip ${filterAI===a?'active':''}" onclick="setLibFilter('ai','${a}')">${a==='all'?'Semua AI':aiLabel(a)}</div>`).join('') +
+    `</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">` +
+    phaseList.map(p => `<div class="filter-chip ${filterPhase===p?'active':''}" onclick="setLibFilter('phase','${p}')">${phaseLabels[p]}</div>`).join('') +
+    `</div>`;
+
+  const filtered = allPrompts.filter(p => {
+    const aiOk = filterAI === 'all' || p.ai === filterAI;
+    const phOk = filterPhase === 'all' || p.phase === filterPhase;
+    return aiOk && phOk;
+  });
+
+  document.getElementById('lib-prompt-list').innerHTML = filtered.length === 0 ?
+    '<div style="font-size:13px;color:var(--text3);padding:16px 0">Tidak ada prompt yang cocok dengan filter.</div>' :
+    filtered.map((p, i) => `<div class="lib-prompt-card">
+      <div class="lib-prompt-meta">
+        <span class="ai-badge ${p.ai}"><span class="ai-dot"></span>${aiLabel(p.ai)}</span>
+        <span class="lib-phase-tag">Fase ${p.phase}</span>
+        ${p.custom ? '<span class="lib-phase-tag" style="background:var(--accent-bg);color:var(--accent)">Custom</span>' : ''}
+        <span style="font-size:13px;font-weight:500;flex:1">${escHtml(p.title)}</span>
+        <button class="copy-btn" onclick="copyPrompt(this, \`${escJs(p.content)}\`)">Salin</button>
+        ${p.custom ? `<button class="btn btn-danger btn-xs" onclick="deleteCustomPrompt(${i})">×</button>` : ''}
+      </div>
+      <div class="prompt-text">${escHtml(p.content)}</div>
+    </div>`).join('');
+}
+
+function setLibFilter(type, val) {
+  state.libFilter[type] = val;
+  renderPromptLibrary();
+}
+
+function openAddPrompt() { openModal('add-prompt-modal'); }
+
+function saveCustomPrompt() {
+  const ai = document.getElementById('ap-ai').value;
+  const phase = document.getElementById('ap-phase').value;
+  const title = document.getElementById('ap-title').value.trim();
+  const content = document.getElementById('ap-content').value.trim();
+  if (!title || !content) { alert('Judul dan teks prompt wajib diisi.'); return; }
+  const prompts = getPrompts();
+  prompts.push({ ai, phase, title, content, custom: true });
+  savePrompts(prompts);
+  closeModal('add-prompt-modal');
+  ['ap-title','ap-content'].forEach(id => document.getElementById(id).value = '');
+  renderPromptLibrary();
+}
+
+function deleteCustomPrompt(idx) {
+  if (!confirm('Hapus prompt custom ini?')) return;
+  const prompts = getPrompts();
+  prompts.splice(idx, 1);
+  savePrompts(prompts);
+  renderPromptLibrary();
+}
+
+function getPhasePrompts(phaseIdx) {
+  const phaseKey = phaseIdx === 3 ? '3.5' : String(phaseIdx + 1);
+  return getPrompts().filter(p => p.phase === phaseKey || p.phase === 'global');
+}
+
+// ============================================================
+// DEFAULT PROMPTS
+// ============================================================
+function getDefaultPrompts() {
+  return [
+    { ai:'chatgpt', phase:'1', title:'Brainstorming 10 ide riset', content:'Saya mahasiswa [bidang studi]. Bantu saya hasilkan 10 ide topik riset yang belum banyak diteliti tentang [tema umum]. Buat ide-idenya beragam, kreatif, dan mencakup berbagai sudut pandang. Jangan filter dulu, prioritaskan kuantitas dan keberagaman.' },
+    { ai:'chatgpt', phase:'1', title:'Sudut pandang alternatif', content:'Berikan 5 sudut pandang yang tidak konvensional atau kontroversial untuk membahas topik [topik]. Termasuk perspektif lintas disiplin jika memungkinkan.' },
+    { ai:'claude', phase:'1', title:'Evaluasi kandidat topik', content:'Saya memiliki beberapa kandidat topik riset berikut:\n[daftar topik]\n\nTolong evaluasi masing-masing berdasarkan: (1) orisinalitas, (2) kelayakan riset untuk mahasiswa, (3) potensi kontribusi akademik, (4) ketersediaan literatur. Rekomendasikan satu terbaik dengan alasan.' },
+    { ai:'perplexity', phase:'1', title:'Cek gap literatur', content:'Apa yang masih menjadi perdebatan atau pertanyaan yang belum terjawab dalam penelitian tentang [topik]? Sertakan referensi paper terbaru yang relevan.' },
+    { ai:'scopus', phase:'2', title:'Cari highly cited papers', content:'Cari paper dengan sitasi tertinggi tentang [topik] dalam 10 tahun terakhir. Filter: peer-reviewed journals, citation count > 50. Tampilkan judul, penulis, tahun, dan jumlah sitasi.' },
+    { ai:'scopus', phase:'2', title:'Tren riset 5-10 tahun', content:'Tunjukkan tren penelitian tentang [topik] dari tahun 2015–2025. Metode apa yang paling banyak digunakan? Siapa peneliti/institusi yang paling produktif? Apa arah riset yang sedang berkembang?' },
+    { ai:'perplexity', phase:'2', title:'Konteks terkini & statistik', content:'Berikan data dan statistik terbaru tentang [topik] dari sumber terpercaya. Sertakan laporan industri, data pemerintah, atau studi terkini yang belum tentu ada di jurnal akademik.' },
+    { ai:'claude', phase:'2', title:'Sintesis multi-paper', content:'Berikut adalah abstrak dari beberapa paper yang saya temukan:\n[paste abstrak]\n\nTolong: (1) identifikasi tema dan temuan utama yang berulang, (2) temukan kontradiksi atau perdebatan antar paper, (3) identifikasi gap yang bisa menjadi fokus risetku, (4) sarankan hubungan antar konsep.' },
+    { ai:'claude', phase:'3', title:'Bangun outline essay', content:'Berdasarkan topik "[topik]" dan sintesis literatur berikut:\n[ringkasan literatur]\n\nBuat outline essay akademik yang kuat dengan: (1) thesis statement yang jelas, (2) struktur argumen yang logis, (3) sub-poin per section, (4) jembatan antar bagian. Panjang target: [X] kata.' },
+    { ai:'perplexity', phase:'3', title:'Validasi klaim outline', content:'Verifikasi klaim-klaim berikut yang akan saya gunakan dalam essay:\n[daftar klaim]\n\nApakah klaim-klaim ini didukung oleh bukti terbaru? Adakah yang perlu direvisi atau yang sudah usang?' },
+    { ai:'gemini', phase:'3.5', title:'Challenge struktur argumen', content:'Kamu adalah peer reviewer jurnal akademik yang skeptis. Baca argumen berikut dan temukan: (1) celah logika atau non-sequitur, (2) asumsi yang tidak didukung bukti, (3) counter-argument yang belum dijawab, (4) sumber yang mungkin bias.\n\n[paste argumen/outline]' },
+    { ai:'claude', phase:'3.5', title:"Devil's advocate", content:"Bermainlah sebagai akademisi yang sangat kritis dan tidak setuju dengan argumen berikut. Serang dari sudut pandang lawan: temukan asumsi lemah, data yang bisa diinterpretasi berbeda, dan argumen tandingan terkuat. Jangan tahan diri.\n\n[paste argumen]" },
+    { ai:'claude', phase:'4', title:'Draft per section', content:'Tulis [nama section] untuk essay akademik tentang "[topik]". Konteks:\n- Thesis utama: [thesis]\n- Poin yang harus dicakup: [poin-poin dari outline]\n- Gaya penulisan: akademis, formal, tapi mudah dipahami\n- Panjang target: [X] kata\n- Referensi yang bisa dikutip: [referensi dari Scopus]' },
+    { ai:'claude', phase:'4', title:'Draft pendahuluan kuat', content:'Tulis pendahuluan yang menarik untuk essay tentang "[topik]". Pendahuluan harus: (1) hook yang kuat di kalimat pertama, (2) konteks dan urgensi topik, (3) gap yang akan diisi essay ini, (4) thesis statement yang jelas, (5) roadmap singkat isi essay. Panjang: 200-300 kata.' },
+    { ai:'claude', phase:'5', title:'Review koherensi & argumen', content:'Review essay berikut sebagai editor akademik. Fokus pada: (1) koherensi argumen dari awal sampai akhir, (2) kualitas thesis dan apakah terjawab di kesimpulan, (3) transisi antar paragraf, (4) gaya bahasa dan formalitas, (5) apakah setiap klaim didukung bukti.\n\n[paste essay]' },
+    { ai:'perplexity', phase:'5', title:'Final fact-check', content:'Verifikasi akurasi semua klaim berikut sebelum saya kumpulkan. Tandai mana yang: (✓) terbukti akurat, (⚠) perlu nuansa/konteks tambahan, (✗) tidak akurat atau sudah usang.\n\n[daftar semua klaim dan data dalam essay]' },
+    { ai:'gemini', phase:'5', title:'Formatting Google Docs', content:'Bantu saya merapikan formatting dokumen ini: (1) pastikan heading hierarchy konsisten (H1, H2, H3), (2) cek konsistensi spasi dan indent, (3) format daftar pustaka sesuai [APA/MLA/Chicago], (4) pastikan page numbering dan margin sesuai standar akademik.' }
+  ];
+}
+
+// ============================================================
+// COPY PROMPT
+// ============================================================
+function copyPrompt(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Tersalin ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Salin'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ============================================================
+// EXPORT / IMPORT
+// ============================================================
+function exportData() {
+  const data = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    projects: load(KEYS.projects) || [],
+    prompts: load(KEYS.prompts) || [],
+    settings: load(KEYS.settings) || {}
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `risetai-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.version) { alert('File tidak valid.'); return; }
+      if (!confirm('Import akan menggabungkan data. Lanjutkan?')) return;
+      if (data.projects) {
+        const existing = getProjects();
+        const existingIds = existing.map(p => p.id);
+        const newProjects = data.projects.filter(p => !existingIds.includes(p.id));
+        saveProjects([...existing, ...newProjects]);
+      }
+      if (data.prompts) {
+        const existingP = getPrompts();
+        const merged = [...existingP, ...data.prompts.filter(p => p.custom)];
+        savePrompts(merged);
+      }
+      if (data.settings) saveSettings(data.settings);
+      alert('Import berhasil!');
+      renderDashboard();
+    } catch { alert('File tidak bisa dibaca. Pastikan format JSON valid.'); }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function confirmClear() {
+  if (!confirm('PERINGATAN: Semua data project dan prompt custom akan dihapus permanen. Lanjutkan?')) return;
+  if (!confirm('Yakin? Data tidak bisa dikembalikan tanpa backup.')) return;
+  [KEYS.projects, KEYS.prompts].forEach(k => localStorage.removeItem(k));
+  alert('Data berhasil dihapus.');
+  showView('dashboard');
+}
+
+// ============================================================
+// MODAL HELPERS
+// ============================================================
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', function(e) { if (e.target === el) el.classList.remove('open'); });
+});
+
+// ============================================================
+// UTILS
+// ============================================================
+function escHtml(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escJs(str) {
+  return String(str||'').replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$/g,'\\$');
+}
+function aiLabel(ai) {
+  return { chatgpt:'ChatGPT', claude:'Claude', perplexity:'Perplexity', scopus:'Scopus AI', gemini:'Gemini' }[ai] || ai;
+}
+function formatDate(ts) {
+  if (!ts) return '—';
+  return new Date(ts).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
+}
+function formatDateFull(ts) {
+  if (!ts) return '—';
+  return new Date(ts).toLocaleString('id-ID', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+initApp();
+</script>
+</body>
+</html>
